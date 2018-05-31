@@ -1,3 +1,4 @@
 { pkgs ? import <nixpkgs> {}
 , self ? pkgs.callPackage ./. {}
-}: self.shell self
+, cli  ? pkgs.callPackage ../. {}
+}: self.shell { inherit self cli; }
