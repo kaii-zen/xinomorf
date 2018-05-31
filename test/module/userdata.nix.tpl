@@ -1,5 +1,5 @@
 ### http://nixos.org/channels/nixos-18.03 nixos
-### s3://benbria/asg/nixostest/nixexprs.tar.bz2 bootstrap
+### ${url} bootstrap
 
 {
   imports = [

@@ -1,11 +1,12 @@
-{ pkgs      ? import <nixpkgs> {}
-, xenomorph ? import ../xenomorph.nix { inherit pkgs; }}:
+{ pkgs     ? import <nixpkgs> {}
+, xinomorf ? import ../../xinomorf.nix { inherit pkgs; }
+, configuration ? null }:
 
-xenomorph {
-  name   = "test";
-  src    = ./module;
+xinomorf {
+  name   = "module";
+  src    = ./.;
   filter = path: _: builtins.match "^.*/nixos(/.*)?$" path == null;
   vars   = {
-    bootstrap = pkgs.callPackage ./nixos {};
+    bootstrap = pkgs.callPackage ./nixos { inherit configuration; };
   };
 }

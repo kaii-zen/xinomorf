@@ -1,2 +1,4 @@
 /result
 /result-*
+/terraform.tfstate
+/terraform.tfstate.backup

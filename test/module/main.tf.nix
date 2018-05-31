@@ -22,8 +22,13 @@
     type = "string";
   })
 
-  (variable "bootstrap" {
+  (variable "s3_bucket" {
     type = "string";
+  })
+
+  (variable "s3_prefix" {
+    type = "string";
+    default = "asg";
   })
 
   (module "role" {
@@ -94,7 +99,6 @@
 
     vars = {
       url    = "\${local.bootstrap_nix_url}";
-      sha256 = "\${local.bootstrap_nix_sha256}";
     };
   })
 
@@ -108,8 +112,8 @@
   })
 
   (resource "aws_s3_bucket_object" "bootstrap_nix" {
-    bucket = "benbria";
-    key    = "asg/\${var.name}/nixexprs.tar.bz2";
+    bucket = "\${var.s3_bucket}";
+    key    = "\${var.s3_prefix}/\${var.name}/nixexprs.tar.bz2";
     source = "\${local.bootstrap}";
     etag   = "\${local.bootstrap_nix_md5}";
   })
