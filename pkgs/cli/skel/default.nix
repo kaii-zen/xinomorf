@@ -1,5 +1,5 @@
 { pkgs     ? import <nixpkgs> {}
-, xinomorf ? import (builtins.fetchGit https://github.com/kreisys/xinomorf.git + "/lib/wrap-deployment.nix") { inherit pkgs; }}:
+, xinomorf ? import ((import ./xinomorf.nix) + "/lib/wrap-deployment.nix") { inherit pkgs; }}:
 
 
 xinomorf {
