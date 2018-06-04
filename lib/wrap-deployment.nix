@@ -78,7 +78,15 @@ in pkgs.runCommand name {
       exec terraform \$cmd -state=\$tf_stat "\$@" $out/etc/terraform
       ;;
     terraform)
-      echo "Please don't run terraform directly"
+      case \$1 in
+        fmt)
+          exec terraform \$1
+          ;;
+        *)
+          echo "Please don't run terraform directly"
+          exit 1
+        ;;
+      esac
       ;;
   esac
   EOF
