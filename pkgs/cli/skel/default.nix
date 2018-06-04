@@ -1,12 +1,8 @@
 { pkgs     ? import <nixpkgs> {}
-, xinomorf ? import ../xinomorf.nix { inherit pkgs; }}:
+, xinomorf ? import (builtins.fetchGit https://github.com/kreisys/xinomorf.git + "/lib/wrap-deployment.nix") { inherit pkgs; }}:
 
 
 xinomorf {
-  name   = "test";
-  src    = pkgs.callPackage ./module {
-    inherit xinomorf;
-    configuration = ./nixos;
-  };
-  filter = path: _: builtins.match "^.*/nixos(/.*)?$" path == null;
+  name   = builtins.baseNameOf (builtins.getEnv "PWD");
+  src    = ./.;
 }

@@ -1,3 +1,4 @@
 { pkgs ? import <nixpkgs> {}
 , self ? pkgs.callPackage ./. {}
-}: self.shell self
+, cli  ? pkgs.callPackage (builtins.fetchGit https://github.com/kreisys/xinomorf.git) {}
+}: self.shell { inherit self cli; }
