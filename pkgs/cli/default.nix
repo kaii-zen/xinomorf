@@ -54,8 +54,8 @@ in runCommand "xinomorf" {} ''
       ;;
     init)
       echo Initializing new project $PWD
-      cp ${./skel}/* .
-      chmod +w *
+      cp -r ${./skel}/. .
+      chmod -R +w .
       ;;
     plan|apply|destroy)
       deployment=$1
