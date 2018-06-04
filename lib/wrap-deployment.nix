@@ -80,7 +80,7 @@ in pkgs.runCommand name {
     terraform)
       case \$1 in
         fmt)
-          exec terraform \$1
+          exec terraform "\$@"
           ;;
         *)
           echo "Please don't run terraform directly"
