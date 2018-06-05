@@ -9,7 +9,7 @@ let
   callPackage = pkgs.newScope self;
   self = rec {
     inherit src name filter vars;
-    inherit (callPackage ./pkgs {}) wrapper shell;
+    inherit (callPackage ./pkgs {}) wrapper shell cli;
     inherit (import ./lib { inherit (pkgs) lib; }) terraformStubs;
   };
 in self
