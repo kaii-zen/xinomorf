@@ -1,13 +1,13 @@
-{ pkgs ? import <nixpkgs> {}}:
+{ stdenv, lib, runCommand, terraform, git, terraformStubs
+, name
+, src
+, filter
+, vars }:
 
 with builtins;
+with lib;
 
-{ name, src, filter ? _: _: true, vars ? {} }: let
-  inherit (pkgs.lib) mapAttrsToList filterAttrs hasSuffix removeSuffix mutuallyExclusive isDerivation;
-
-  stringify = import ./stringify.nix { inherit (pkgs.lib) mapAttrsToList; };
-  terraformStubs = import ./terraform-stubs.nix { inherit stringify vars; };
-
+let
   files = let
     regular = attrNames (filterAttrs (_: v: v == "regular") (readDir src));
     tf    = builtins.filter (filename: hasSuffix ".tf"     filename) regular;
@@ -15,22 +15,12 @@ with builtins;
   in if mutuallyExclusive tf (map (removeSuffix ".nix") tfNix) then {
     inherit tf tfNix;
   } else throw "Filenames must be unique (can't have both foo.tf.nix and foo.tf)";
-in pkgs.runCommand name {
+in runCommand name {
   src = if isDerivation src then (src + "/etc/terraform") else path {
     path = src;
     filter = path: type: match "^.*\.nix$" path == null && type != "symlink" && filter path type;
   };
-  buildInputs = [ pkgs.terraform pkgs.git ];
-
-  passthru = {
-    shell = { self, cli }: import ../pkgs/shell { inherit pkgs self cli; };
-    aliases = self: pkgs.runCommand "${self.name}-aliases" {} '' mkdir -p $out/bin
-      ln -s ${self}/bin/xf-${self.name} $out/bin/plan
-      ln -s ${self}/bin/xf-${self.name} $out/bin/apply
-      ln -s ${self}/bin/xf-${self.name} $out/bin/destroy
-      ln -s ${self}/bin/xf-${self.name} $out/bin/terraform
-    '';
-  };
+  buildInputs = [ terraform git ];
 
 } ''
   set -e
@@ -42,7 +32,7 @@ in pkgs.runCommand name {
   cd $out/etc/terraform
   ${concatStringsSep "\n" (map (fileName: ''
     cat <<'EOF' > ${removeSuffix ".nix" fileName}
-    ${concatStringsSep "\n" (import (src + "/${fileName}") terraformStubs)}
+    ${concatStringsSep "\n" (import (src + "/${fileName}") (terraformStubs { inherit vars; }))}
     EOF
     ''
   ) files.tfNix)}
@@ -53,8 +43,8 @@ in pkgs.runCommand name {
   terraform init
 
   cat <<EOF > $out/bin/xf-${name}
-  #!${pkgs.stdenv.shell}
-  PATH=${pkgs.terraform}/bin:$PATH
+  #!${stdenv.shell}
+  PATH=${terraform}/bin:$PATH
 
   tf_stat="\$PWD/terraform.tfstate"
   tf_conf="$out/etc/terraform"

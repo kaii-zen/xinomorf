@@ -1,6 +1,7 @@
-{ mapAttrsToList }: obj:
+{ lib }:
 
 with builtins;
+with lib;
 
 let
   stringify = obj: if isString obj
@@ -26,4 +27,4 @@ let
       concatStringsSep ",\n" (map stringify list)
     }]
   '';
-in stringify obj
+in stringify

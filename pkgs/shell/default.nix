@@ -1,11 +1,7 @@
-{ pkgs, self, cli }:
+{ mkShell, wrapper, bashInteractive, cli, aliases }:
 
-with builtins;
-
-let
-  aliases = self.aliases self;
-in pkgs.mkShell {
-  buildInputs = [ self pkgs.bashInteractive aliases cli ];
+mkShell {
+  buildInputs = [ aliases bashInteractive cli wrapper ];
   shellHook = ''
     if ! env | grep '^DIRENV' &>/dev/null; then
       # We aren't allowed to print anything when

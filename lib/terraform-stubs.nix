@@ -1,4 +1,6 @@
-{ stringify, vars }:
+{ stringify }:
+
+{ vars }:
 
 {
   data = type: name: attrs: ''

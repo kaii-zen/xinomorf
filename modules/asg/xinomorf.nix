@@ -1,9 +1,7 @@
-{ pkgs     ? import <nixpkgs> {}
-, xinomorf ? import ../../xinomorf.nix { inherit pkgs; }
-, configuration ? null }:
+{ pkgs ? import <nixpkgs> {}, configuration ? null }:
 
-xinomorf {
-  name   = "module";
+import ../../. {
+  inherit pkgs;
   src    = ./.;
   filter = path: _: builtins.match "^.*/nixos(/.*)?$" path == null;
   vars   = {
