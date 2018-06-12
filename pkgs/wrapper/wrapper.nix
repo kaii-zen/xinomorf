@@ -1,4 +1,4 @@
-{ stdenv, lib, runCommand, terraform, git, terraformStubs
+{ stdenv, lib, runCommand, terraform, git, terraformStubs, terraform-landscape
 , name
 , src
 , filter
@@ -64,12 +64,18 @@ in runCommand name {
     init)
       echo no
       ;;
-    plan|apply|destroy)
-      exec terraform \$cmd -state=\$tf_stat "\$@" $out/etc/terraform
+    plan)
+      terraform \$cmd -state=\$tf_stat "\$@" $out/etc/terraform | ${terraform-landscape}/bin/landscape
+      ;;
+    apply)
+      exec terraform \$cmd -auto-approve -state=\$tf_stat "\$@" $out/etc/terraform
+      ;;
+    destroy)
+      exec terraform \$cmd -force -state=\$tf_stat "\$@" $out/etc/terraform
       ;;
     terraform)
       case \$1 in
-        fmt)
+        fmt|state)
           exec terraform "\$@"
           ;;
         *)
