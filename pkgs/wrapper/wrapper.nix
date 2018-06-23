@@ -1,4 +1,4 @@
-{ stdenv, lib, runCommand, terraform, git, terraformStubs, terraform-landscape
+{ stdenv, lib, runCommand, terraform, git, terraformStubs, terraform-landscape, nix
 , name
 , src
 , filter
@@ -20,16 +20,22 @@ in runCommand name {
     path = src;
     filter = path: type: match "^.*\.nix$" path == null && type != "symlink" && filter path type;
   };
-  buildInputs = [ terraform git ];
+  buildInputs = [ terraform git nix ];
 
 } ''
   set -e
-  mkdir -p $out/{lib,etc}/terraform $out/bin
 
-  cd $src
-  cp -r * $out/etc/terraform
+  mkdir $out
+  cd $_
 
-  cd $out/etc/terraform
+  mkdir -p lib/terraform {bin,etc}
+  cd $_
+
+  cp -r $src terraform
+  chmod ug+rwx terraform
+
+  cd terraform
+
   ${concatStringsSep "\n" (map (fileName: ''
     cat <<'EOF' > ${removeSuffix ".nix" fileName}
     ${concatStringsSep "\n" (import (src + "/${fileName}") (terraformStubs { inherit vars; }))}
@@ -46,7 +52,9 @@ in runCommand name {
   #!${stdenv.shell}
   PATH=${terraform}/bin:$PATH
 
+  # Write state files to the user's current directory
   tf_stat="\$PWD/terraform.tfstate"
+
   tf_conf="$out/etc/terraform"
   tf_data="$out/lib/terraform"
 

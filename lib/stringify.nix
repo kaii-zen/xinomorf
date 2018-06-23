@@ -4,13 +4,15 @@ with builtins;
 with lib;
 
 let
-  stringify = obj: if isString obj
+  stringify = obj: if isDerivation obj
                    then quoteStr obj
                    else if isAttrs obj
                    then attrsToStr obj
                    else if isList obj
                    then listToStr obj
-                   else toString obj;
+                   else if isBool obj || isInt obj || isFloat obj
+                   then toString obj
+                   else quoteStr obj;
 
   quoteStr = str: ''"${str}"'';
 

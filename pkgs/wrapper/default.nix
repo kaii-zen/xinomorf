@@ -2,8 +2,7 @@
 , name
 , src
 , filter
-, vars
-, }:
+, vars }:
 
 let
   callPackage = newScope self;

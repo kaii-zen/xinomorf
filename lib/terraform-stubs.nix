@@ -1,4 +1,4 @@
-{ stringify }:
+{ lib, stringify }:
 
 { vars }:
 
@@ -15,8 +15,11 @@
     provider ${stringify name} ${stringify attrs}
   '';
 
-  module = name: attrs: ''
-    module ${stringify name} ${stringify attrs}
+  module = name: attrs: with lib; let
+    getTfvars = path: let tfvars = path + "/terraform.tfvars.json"; in if builtins.pathExists tfvars then importJSON tfvars else {};
+    extraAttrs = if attrs ? source then getTfvars attrs.source else {};
+  in ''
+    module ${stringify name} ${stringify (recursiveUpdate extraAttrs attrs)}
   '';
 
   locals = attrs: ''

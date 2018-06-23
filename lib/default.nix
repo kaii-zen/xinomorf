@@ -2,5 +2,5 @@
 
 rec {
   stringify = import ./stringify.nix { inherit lib; };
-  terraformStubs = import ./terraform-stubs.nix { inherit stringify; };
+  terraformStubs = import ./terraform-stubs.nix { inherit stringify lib; };
 }

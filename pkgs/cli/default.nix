@@ -1,7 +1,7 @@
 # We have to use bashInteractive
 # because otherwise `compgen`
 # won't be available...    ↴
-{ runCommand, bashInteractive, writeText }:
+{ runCommand, bashInteractive, writeText, nix }:
 
 let
   usage = writeText "xinomorf-usage.txt" ''
@@ -15,6 +15,7 @@ let
         apply               Apply a Terraform plan
         destroy             Destroy a Terraform deployment
         init                Initialize a new project
+
   '';
 
 in runCommand "xinomorf" {} ''
@@ -23,6 +24,8 @@ in runCommand "xinomorf" {} ''
   cat <<'EOF' > $out/bin/xinomorf
   #!${bashInteractive}/bin/bash
   pref="xf"
+
+  set -e
 
   stderr() {
     1>&2 echo -e "$@"
@@ -37,7 +40,11 @@ in runCommand "xinomorf" {} ''
   }
 
   deployments() {
-    compgen -c $pref- | cut -d- -f2
+    compgen -c $pref- | cut -d- -f2-
+  }
+
+  have_deployments() {
+    [[ $(deployments | wc -l) > 0 ]]
   }
 
   has_deployment() {
@@ -46,7 +53,8 @@ in runCommand "xinomorf" {} ''
   }
 
   cmd=$1
-  shift
+
+  if [[ -n $cmd ]]; then shift; fi
 
   case $cmd in
     list|ls)
@@ -58,17 +66,48 @@ in runCommand "xinomorf" {} ''
       chmod -R +w .
       ;;
     plan|apply|destroy)
-      deployment=$1
-      shift
+      nix_build_opts=()
+      terraform_opts=()
+      positional=()
+      while [[ $# -gt 0 ]]; do
+        case $1 in
+          --*)
+            nix_build_opts+=("$1")
+            shift
+            ;;
+          -*)
+            terraform_opts+=("$1")
+            shift
+            ;;
+          *)
+            positional+=("$1")
+            shift
+            ;;
+        esac
+      done
 
-      if [[ -z $deployment ]] || ! has_deployment $deployment; then
-        err "Must specify a valid deployment."
-        stderr "Available deployments:"
-        deployments | indent
+      set -- "''${positional[@]}"
+
+      if [[ -n $1 && ''${1::1}  != "-" ]]; then
+        deployment=''${1:-$XMF_DEPLOY}
+        shift
+      fi
+
+      if [[ -z $deployment ]]; then
+        deployment=$(basename $PWD)
+        PATH=$(nix-build "''${nix_build_opts[@]}" --no-out-link ${writeText "ad-hoc-wrapper.nix" "(import ${../../.} {}).wrapper"})/bin:$PATH
+      fi
+
+      if ! has_deployment $deployment; then
+        err "deployment '$deployment' does not exist on this system."
+        if have_deployments; then
+          stderr "Available deployments:"
+          deployments | indent
+        fi
         exit 1
       fi
 
-      exec $pref-$deployment $cmd "$@"
+      exec $pref-$deployment $cmd "''${nix_build_opts[@]}"
       ;;
     *)
       cat ${usage}
