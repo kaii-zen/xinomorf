@@ -23,7 +23,7 @@ in runCommand "xinomorf" {} ''
 
   cat <<'EOF' > $out/bin/xinomorf
   #!${bashInteractive}/bin/bash
-  pref="xf"
+  prefix="xf"
 
   set -e
 
@@ -40,7 +40,7 @@ in runCommand "xinomorf" {} ''
   }
 
   deployments() {
-    compgen -c $pref- | cut -d- -f2-
+    compgen -c $prefix- | cut -d- -f2-
   }
 
   have_deployments() {
@@ -107,7 +107,7 @@ in runCommand "xinomorf" {} ''
         exit 1
       fi
 
-      exec $pref-$deployment $cmd "''${nix_build_opts[@]}"
+      exec $prefix-$deployment $cmd "''${nix_build_opts[@]}"
       ;;
     *)
       cat ${usage}
