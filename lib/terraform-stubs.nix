@@ -16,7 +16,7 @@
   '';
 
   module = name: attrs: with lib; let
-    getTfvars = path: let tfvars = path + "/terraform.tfvars.json"; in if builtins.pathExists tfvars then importJSON tfvars else {};
+    getTfvars = path: if (builtins.readDir path) ? "terraform.tfvars.json" then importJSON "${path}/terraform.tfvars.json" else {};
     extraAttrs = if attrs ? source then getTfvars attrs.source else {};
   in ''
     module ${stringify name} ${stringify (recursiveUpdate extraAttrs attrs)}
