@@ -18,7 +18,7 @@ let
 in runCommand name {
   src = if isDerivation src then (src + "/etc/terraform") else path {
     path = src;
-    filter = path: type: match "^.*\.tf\.nix$" path == null && type != "symlink" && filter path type;
+    filter = path: type: match "^.*\.tf\.nix$" path == null && match "^.*\.tfstate.*$" path == null && type != "symlink" && filter path type;
   };
   buildInputs = [ terraform git nix ];
 
