@@ -1,4 +1,4 @@
-{ stdenv, lib, runCommand, terraform, git, terraformStubs, terraform-landscape, nix
+{ stdenv, lib, cacert, runCommand, terraform, git, terraformStubs, terraform-landscape, nix
 , name
 , src
 , filter
@@ -20,7 +20,7 @@ in runCommand name {
     path = src;
     filter = path: type: match "^.*\.tf\.nix$" path == null && match "^.*\.tfstate.*$" path == null && type != "symlink" && filter path type;
   };
-  buildInputs = [ terraform git nix ];
+  buildInputs = [ terraform git nix cacert ];
 
 } ''
   set -e
@@ -46,7 +46,7 @@ in runCommand name {
   terraform fmt
 
   export TF_DATA_DIR=$out/lib/terraform
-  terraform init
+  GIT_SSL_CAINFO="${cacert}/etc/ssl/certs/ca-bundle.crt" terraform init
 
   cat <<EOF > $out/bin/xf-${name}
   #!${stdenv.shell}
