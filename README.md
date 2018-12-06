@@ -5,6 +5,7 @@
 ## Wait What?
 
 Terraform is awesome at enabling infrastructure as code across many many providers as well as collaboration among team members via remote state; however, its [HCL](https://github.com/hashicorp/hcl)-based language got me pulling my hair on more than one occasion. Too many weirdnesses and seemingly random things such as not being able to use a variable for a module source, no counts for modules, no easy way to work with temporary local files (aws lambda anyone?)... etc. I can go on forever. Really no shade intended, I absolutely love Terraform and I'm scared to think where I would have been without it.
+
 Nix on the other hand is absolutely a pleasure to work with for templating (pretty sure it was designed with that in mind). Fetching stuff from all over the place is a breeze, creating ad-hoc files is straight forward and no need to about temp file names or locations (yay `/nix/store`!). So why not use Nix to generate Terraform configs?
 
 ## How?
