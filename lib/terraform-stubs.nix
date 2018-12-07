@@ -1,18 +1,22 @@
-{ lib, stringify }:
+{ lib, stringify, stringifyAttrs }:
 
 { vars }:
 
-{
+rec {
   data = type: name: attrs: ''
     data ${stringify type} ${stringify name} ${stringify attrs}
   '';
 
-  resource = type: name: attrs: ''
-    resource ${stringify type} ${stringify name} ${stringify attrs}
+  resource = type: name: attrs: list: ''
+    resource ${stringify type} ${stringify name} ${stringifyAttrs attrs list}
   '';
 
   provider = name: attrs: ''
     provider ${stringify name} ${stringify attrs}
+  '';
+
+  provisioner = name: attrs: ''
+    provisioner ${stringify name} ${stringify attrs}
   '';
 
   module = name: attrs: with lib; let

@@ -1,6 +1,7 @@
 { lib ? import <nixpkgs/lib> {}}:
 
+let stringify' = import ./stringify.nix { inherit lib; }; in
 rec {
-  stringify = import ./stringify.nix { inherit lib; };
-  terraformStubs = import ./terraform-stubs.nix { inherit stringify lib; };
+  inherit (stringify') stringify stringifyAttrs;
+  terraformStubs = import ./terraform-stubs.nix { inherit stringify stringifyAttrs lib; };
 }

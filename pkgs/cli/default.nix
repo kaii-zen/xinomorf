@@ -107,6 +107,7 @@ in runCommand "xinomorf" {} ''
         exit 1
       fi
 
+      echo $prefix-$deployment $cmd "''${nix_build_opts[@]}"
       exec $prefix-$deployment $cmd "''${nix_build_opts[@]}"
       ;;
     *)
