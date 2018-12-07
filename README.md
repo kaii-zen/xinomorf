@@ -12,6 +12,7 @@ More than once have I been pulling my hair over seemingly random limitations of 
 - Not being able to use a variable in a module source
 - Modules can't be multiplied/repeated with `count`s
 - No easy way to work with temporary local files (aws lambda anyone?)
+
 Really no shade intended though! I'm absolutely sure those things are being addressed as I'm typing these lines.
 Hashicorp are a super smart and competent bunch and I can't even imagine where I would've been today without them (hint: drowning in Chef rb files)
 
@@ -24,7 +25,7 @@ Basically we take `*.tf.nix` files and turn them into `*.tf` files.
 
 ### Firstly,
 
-`.tf` files are just passed through as they are. That's useful for painless incremental migration. Instead of having to convert everything at once, we can convert one file at a time and some never at all. Let's start with a `hello world` example; starting with POTF (Plain Old Terraform File):
+`.tf` files are just passed through as they are. That's useful for painless incremental migration. Instead of having to convert everything at once, we can convert one file at a time and some never at all. Let's start with a `hello world` example; starting with a POTF (Plain Old Terraform File):
 
 ```terraform
 # hello.tf
