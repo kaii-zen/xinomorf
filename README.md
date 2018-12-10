@@ -1,6 +1,6 @@
 # Xinomorf
 
-![Xinomorf](/misc/xinomorf.png)
+![Xinomorf](misc/xinomorf.png)
 
 ## Wait What?
 
