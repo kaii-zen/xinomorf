@@ -1,1 +1,1 @@
-(import ./. { name = "xmf-test"; src = ./test; }).shell
+(import ./. { name = "xmf-test"; src = ./examples/helloworld; }).shell
