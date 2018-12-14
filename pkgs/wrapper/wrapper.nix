@@ -59,6 +59,7 @@ in runCommand name {
   tf_data="$out/lib/terraform"
 
   export TF_DATA_DIR="\$tf_data"
+  export TF_CLI_ARGS="-input=false"
 
   bin="\$(basename \$0)"
   if [[ \$bin == xf-${name} ]]; then
