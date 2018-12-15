@@ -59,7 +59,6 @@ in runCommand name {
   tf_data="$out/lib/terraform"
 
   export TF_DATA_DIR="\$tf_data"
-  export TF_CLI_ARGS="-input=false"
 
   bin="\$(basename \$0)"
   if [[ \$bin == xf-${name} ]]; then
@@ -74,13 +73,13 @@ in runCommand name {
       echo no
       ;;
     plan)
-      terraform \$cmd -state=\$tf_stat "\$@" $out/etc/terraform | ${terraform-landscape}/bin/landscape
+      terraform \$cmd -input=false -state=\$tf_stat "\$@" $out/etc/terraform | ${terraform-landscape}/bin/landscape
       ;;
     apply)
-      exec terraform \$cmd -auto-approve -state=\$tf_stat "\$@" $out/etc/terraform
+      exec terraform \$cmd -input=false -auto-approve -state=\$tf_stat "\$@" $out/etc/terraform
       ;;
     destroy)
-      exec terraform \$cmd -force -state=\$tf_stat "\$@" $out/etc/terraform
+      exec terraform \$cmd -input=false -force -state=\$tf_stat "\$@" $out/etc/terraform
       ;;
     terraform)
       case \$1 in
