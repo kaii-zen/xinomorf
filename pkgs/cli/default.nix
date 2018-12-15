@@ -1,7 +1,7 @@
 # We have to use bashInteractive
 # because otherwise `compgen`
 # won't be available...    ↴
-{ runCommand, bashInteractive, writeText, nix, modules }:
+{ runCommand, bashInteractive, writeText, nix, nix-prefetch-git, modules }:
 
 let
   usage = writeText "xinomorf-usage.txt" ''
@@ -18,7 +18,9 @@ let
 
   '';
 
-in runCommand "xinomorf" {} ''
+in runCommand "xinomorf" {
+  buildInputs = [ nix nix-prefetch-git ];
+} ''
   mkdir -p $out/bin
 
   cat <<'EOF' > $out/bin/xinomorf
@@ -64,6 +66,10 @@ in runCommand "xinomorf" {} ''
       echo Initializing new project $PWD
       cp -r ${./skel}/. .
       chmod -R +w .
+      mkdir -p pins
+      cd $_
+      nix-prefetch-git https://github.com/kreisys/xinomorf > xinomorf.json
+      nix-prefetch-git https://github.com/kreisys/anxt     > anxt.json
       ;;
     plan|apply|destroy)
       nix_build_opts=()
