@@ -4,12 +4,13 @@
 , name ? if pkgs.lib.isDerivation src then src.name else builtins.baseNameOf src
 , filter ? _: _: true
 , vars ? {}
+, modules ? {}
 }:
 
 let
   callPackage = pkgs.newScope self;
   self = rec {
-    inherit src name filter vars;
+    inherit src name filter vars modules;
     inherit (callPackage ./pkgs {}) wrapper shell cli;
     inherit (import ./lib { inherit lib; }) terraformStubs;
   };

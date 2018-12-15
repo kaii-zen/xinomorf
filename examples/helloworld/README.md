@@ -1,4 +1,3 @@
-# Hello World!
+# Hello World module example
 
-Contrived example that says it all. Hopefully :)
-Just run `xm apply` and marvel at the greeting.
+Here we show how to factor out the previous config into a Xinomorf module; resulting in a much cleaner config.

@@ -1,7 +1,7 @@
 # We have to use bashInteractive
 # because otherwise `compgen`
 # won't be available...    ↴
-{ runCommand, bashInteractive, writeText, nix }:
+{ runCommand, bashInteractive, writeText, nix, modules }:
 
 let
   usage = writeText "xinomorf-usage.txt" ''
@@ -95,7 +95,14 @@ in runCommand "xinomorf" {} ''
 
       if [[ -z $deployment ]]; then
         deployment=$(basename $PWD)
-        PATH=$(nix-build "''${nix_build_opts[@]}" --no-out-link ${writeText "ad-hoc-wrapper.nix" "(import ${../../.} {}).wrapper"})/bin:$PATH
+
+        if [[ -f $PWD/xinomorf.nix ]]; then
+          xinomorf=$PWD/xinomorf.nix
+        else
+          xinomorf=${../../.}
+        fi
+
+        PATH=$(nix-build "''${nix_build_opts[@]}" --no-out-link --argstr xinomorf $xinomorf ${./ad-hoc-wrapper.nix})/bin:$PATH
       fi
 
       if ! has_deployment $deployment; then

@@ -1,13 +1,16 @@
-{ stdenv, lib, cacert, runCommand, terraform, git, terraformStubs, terraform-landscape, nix
+{ pkgs, stdenv, lib, cacert, runCommand, terraform, git, terraformStubs, terraform-landscape, nix
 , name
 , src
 , filter
+, modules
 , vars }:
 
 with builtins;
 with lib;
 
 let
+  stubs    = terraformStubs { inherit vars; };
+  modules' = mapAttrs (name: path: import path { inherit stubs pkgs; }) modules;
   files = let
     regular = attrNames (filterAttrs (_: v: v == "regular") (readDir src));
     tf    = builtins.filter (filename: hasSuffix ".tf"     filename) regular;
@@ -38,7 +41,7 @@ in runCommand name {
 
   ${concatStringsSep "\n" (map (fileName: ''
     cat <<'EOF' > ${removeSuffix ".nix" fileName}
-    ${concatStringsSep "\n" (import (src + "/${fileName}") (terraformStubs { inherit vars; }))}
+    ${concatStringsSep "\n" (import (src + "/${fileName}") (modules' // stubs))}
     EOF
     ''
   ) files.tfNix)}
