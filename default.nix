@@ -1,9 +1,9 @@
-{ pkgs ? import <nixpkgs> {}
-, lib ? pkgs.lib
-, src ? builtins.getEnv "PWD"
-, name ? if pkgs.lib.isDerivation src then src.name else builtins.baseNameOf src
-, filter ? _: _: true
-, vars ? {}
+{ pkgs    ? import <nixpkgs> {}
+, lib     ? pkgs.lib
+, src     ? builtins.getEnv "PWD"
+, name    ? if lib.isDerivation src then src.name else builtins.baseNameOf src
+, filter  ? _: _: true
+, vars    ? {}
 , modules ? {}
 }:
 
