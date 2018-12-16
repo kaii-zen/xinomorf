@@ -1,4 +1,4 @@
-{ newScope, terraformStubs
+{ newScope, terraformStubs, terraform
 , name
 , src
 , filter
@@ -8,7 +8,7 @@
 let
   callPackage = newScope self;
   self = rec {
-    inherit name src filter vars terraformStubs modules;
+    inherit name src filter vars terraformStubs modules terraform;
     wrapper = callPackage ./wrapper.nix {};
     aliases = callPackage ./aliases.nix {};
   };
