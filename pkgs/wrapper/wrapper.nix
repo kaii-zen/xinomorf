@@ -1,4 +1,4 @@
-{ pkgs, stdenv, lib, cacert, runCommand, terraform, git, terraformStubs, terraform-landscape, nix
+{ callPackage, stdenv, lib, runCommand, cacert, terraform, git, terraformStubs, terraform-landscape, nix
 , name
 , src
 , filter
@@ -10,7 +10,8 @@ with lib;
 
 let
   stubs    = terraformStubs { inherit vars; };
-  modules' = mapAttrs (name: path: import path { inherit stubs pkgs; }) modules;
+  modules' = mapAttrs (name: path: callPackage path { inherit stubs; }) modules;
+
   files = let
     regular = attrNames (filterAttrs (_: v: v == "regular") (readDir src));
     tf    = builtins.filter (filename: hasSuffix ".tf"     filename) regular;
