@@ -15,13 +15,14 @@ let
     then toString obj
     else quoteStr obj;
 
-  normalizeAttrNames = transformAttrNames (name:
+  normalizeName = name:
     if   isCamel name
     then camelToSnake name
-    else assert isSnake name; name
-  );
+    else assert isSnake name; name;
 
-  stringify = stringify' {};
+  normalizeAttrNames = transformAttrNames normalizeName;
+
+  stringify         = stringify' {};
   stringifyNoQuotes = stringify' { quoteStr = lib.id; };
 
   attrsToStr = attrs: list: ''
