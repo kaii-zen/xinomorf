@@ -1,4 +1,4 @@
-{ lib }:
+{ lib, transformAttrNames, isCamel, isSnake, camelToSnake }:
 
 with builtins;
 with lib;
@@ -15,13 +15,19 @@ let
     then toString obj
     else quoteStr obj;
 
+  normalizeAttrNames = transformAttrNames (name:
+    if   isCamel name
+    then camelToSnake name
+    else assert isSnake name; name
+  );
+
   stringify = stringify' {};
   stringifyNoQuotes = stringify' { quoteStr = lib.id; };
 
   attrsToStr = attrs: list: ''
     {
     ${
-      concatStringsSep "\n" (mapAttrsToList (name: value: "  ${name} = ${stringify value}") attrs)
+      concatStringsSep "\n" (mapAttrsToList (name: value: "  ${name} = ${stringify value}") (normalizeAttrNames attrs))
     }
     ${
       concatStringsSep "\n" (map stringifyNoQuotes list)

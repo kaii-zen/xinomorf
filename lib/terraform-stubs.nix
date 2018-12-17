@@ -1,25 +1,26 @@
-{ lib, stringify, stringifyAttrs }:
+{ lib, stringify, stringifyAttrs, attrsSnakeToCamel ? lib.id, snakeToCamel ? lib.id }:
 
 { vars }:
 
 rec {
   data = type: name: attrs: {
+    inherit type name attrs;
     __toString = self: ''
-    data ${stringify type} ${stringify name} ${stringify attrs}
+    data ${stringify self.type} ${stringify self.name} ${stringify self.attrs}
   '';
   };
 
   resource = type: name: attrs: list: {
     inherit type name attrs list;
     __toString = self: ''
-      resource ${stringify type} ${stringify name} ${stringifyAttrs attrs list}
+      resource ${stringify self.type} ${stringify self.name} ${stringifyAttrs self.attrs self.list}
     '';
   };
 
   provider = name: attrs: {
     inherit name attrs;
     __toString = self: ''
-      provider ${stringify name} ${stringify attrs}
+      provider ${stringify self.name} ${stringify self.attrs}
     '';
   };
 
@@ -33,7 +34,7 @@ rec {
   in {
     inherit name attrs;
     __toString = self: ''
-      module ${stringify name} ${stringify (recursiveUpdate extraAttrs attrs)}
+      module ${stringify self.name} ${stringify (recursiveUpdate extraAttrs self.attrs)}
     '';
   };
 
