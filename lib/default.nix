@@ -1,4 +1,4 @@
-{ lib ? import <nixpkgs/lib> {}}:
+{ lib ? import <nixpkgs/lib>}:
 
 let stringify' = import ./stringify.nix { inherit lib; }; in
 rec {
