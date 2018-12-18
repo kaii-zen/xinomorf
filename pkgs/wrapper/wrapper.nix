@@ -42,7 +42,7 @@ in runCommand name {
 
   ${concatStringsSep "\n" (map (fileName: ''
     cat <<'EOF' > ${removeSuffix ".nix" fileName}
-    ${concatStringsSep "\n" (import (src + "/${fileName}") (modules' // stubs))}
+    ${concatStringsSep "\n" (callPackage (src + "/${fileName}") (modules' // stubs))}
     EOF
     ''
   ) files.tfNix)}
