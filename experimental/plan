@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+set -eo pipefail
+
+entrypoint=${1?'Must provide entrypoint'}
+shift
+
+exec `nix-build eval.nix --no-out-link -A config.activationScript --argstr entrypoint $entrypoint "$@"`
